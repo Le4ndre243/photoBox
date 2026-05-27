@@ -1,0 +1,13 @@
+{
+  "name": "photobox",
+  "version": "1.0.0",
+  "description": "TD7 - Photobox with fetch and promises",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --sourcemap --target=es2015 --outfile=dist/index.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.17.18",
+    "handlebars": "^4.7.8",
+    "typescript": "^5.0.0"
+  }
+}

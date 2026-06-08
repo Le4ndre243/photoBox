@@ -1,57 +1,91 @@
 import { API_BASE_URL } from './config';
 import { Photo, Categorie, Commentaire, PhotoCollection } from './types';
 
-const FETCH_OPTIONS: RequestInit = {
-  credentials: 'include'
-};
+const BASE = 'https://webetu.iutnc.univ-lorraine.fr';
+
+const FETCH_OPTIONS: RequestInit = { credentials: 'include' };
+
+function toAbsoluteUrl(link: any): string | null {
+  let href: string | null = null;
+  if (typeof link === 'string') href = link;
+  else if (link?.href) href = link.href;
+  if (!href) return null;
+  if (href.startsWith('http')) return href;
+  return `${BASE}${href}`;
+}
 
 export function loadResource<T>(uri: string): Promise<T> {
   return fetch(uri, FETCH_OPTIONS)
-    .then((r: Response): Promise<T> => {
+    .then(r => {
       if (!r.ok) return Promise.reject(new Error(`HTTP ${r.status}: ${r.statusText}`));
-      return r.json() as Promise<T>;
-    })
-    .catch((err: unknown): Promise<T> => {
-      if (err instanceof Error) {
-        console.error('Erreur loadResource:', err.message);
-      }
-      return Promise.reject(err);
+      return r.json();
     });
 }
 
-export function loadPicture(idPicture: number): Promise<Photo> {
-  const url = `${API_BASE_URL}/photos/${idPicture}`;
+export function loadPicture(id: number): Promise<Photo> {
+  const url = `${API_BASE_URL}/photos/${id}`;
   return fetch(url, FETCH_OPTIONS)
-    .then((r: Response): Promise<Photo> => {
+    .then(r => {
       if (!r.ok) return Promise.reject(new Error(`HTTP ${r.status}: ${r.statusText}`));
-      return r.json() as Promise<Photo>;
+      return r.json();
     })
-    .catch((err: unknown): Promise<Photo> => {
-      if (err instanceof Error) {
-        console.error('Erreur loadPicture:', err.message);
-      }
-      return Promise.reject(err);
+    .then(data => {
+      const raw = data.photo;
+      const photo: Photo = {
+        id: raw.id,
+        titre: raw.titre,
+        type: raw.type,
+        description: raw.descr,
+        url: toAbsoluteUrl(raw.url) ?? '',
+        links: data.links ?? {}
+      };
+      return photo;
     });
 }
 
 export function loadPhotos(uri?: string): Promise<PhotoCollection> {
   const url = uri ?? `${API_BASE_URL}/photos`;
-  return loadResource<PhotoCollection>(url);
+  return fetch(url, FETCH_OPTIONS)
+    .then(r => {
+      if (!r.ok) return Promise.reject(new Error(`HTTP ${r.status}: ${r.statusText}`));
+      return r.json();
+    })
+    .then(data => {
+      // Normaliser les photos : { photo: {...}, links: {...} } → Photo
+      const photos: Photo[] = (data.photos ?? []).map((item: any) => ({
+        id: item.photo.id,
+        titre: item.photo.titre,
+        url: toAbsoluteUrl(item.photo.original) ?? '',
+        thumbnail: toAbsoluteUrl(item.photo.thumbnail) ?? '',
+        links: item.links ?? {}
+      }));
+
+      return {
+        data: photos,
+        links: data.links ?? {}
+      } as PhotoCollection;
+    });
 }
 
 export function loadCategorie(photo: Photo): Promise<Categorie> {
-  const uri = photo.links?.categorie;
-  if (!uri) return Promise.reject(new Error('Pas de lien catégorie pour cette photo'));
-  return loadResource<Categorie>(uri);
+  const uri = toAbsoluteUrl(photo.links?.categorie);
+  if (!uri) return Promise.reject(new Error('Pas de lien catégorie'));
+  return loadResource<any>(uri).then(data => {
+    const cat = data.categorie ?? data;
+    return { id: cat.id, libelle: cat.nom } as Categorie;  
+  });
 }
 
 export function loadCommentaires(photo: Photo): Promise<Commentaire[]> {
-  const uri = photo.links?.commentaires;
-  if (!uri) return Promise.reject(new Error('Pas de lien commentaires pour cette photo'));
-  return loadResource<Commentaire[] | { data: Commentaire[] }>(uri).then((result) => {
-    // L'API peut retourner un tableau direct ou un objet avec data
-    if (Array.isArray(result)) return result;
-    if (result && typeof result === 'object' && 'data' in result) return result.data;
-    return [];
+  const uri = toAbsoluteUrl(photo.links?.comments ?? photo.links?.commentaires);
+  if (!uri) return Promise.reject(new Error('Pas de lien commentaires'));
+  return loadResource<any>(uri).then(data => {
+    const list: any[] = data.comments ?? data.data ?? data ?? [];
+    return list.map(c => ({
+      id: c.id,
+      auteur: c.pseudo,     
+      contenu: c.content,    
+      date: c.date
+    })) as Commentaire[];
   });
 }

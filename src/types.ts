@@ -1,16 +1,19 @@
 export interface PhotoLinks {
-  categorie?: string;
-  commentaires?: string;
-  self?: string;
-  [key: string]: string | undefined;
+  categorie?: { href: string } | string;
+  comments?: { href: string } | string;
+  commentaires?: { href: string } | string;
+  self?: { href: string } | string;
+  [key: string]: { href: string } | string | object | undefined;
 }
 
 export interface Photo {
   id: number;
   titre: string;
-  type: string;
-  url: string;
+  type?: string;
+  url?: string;           // URL complète construite
+  thumbnail?: string;     // URL vignette construite
   date?: string;
+  descr?: string;
   description?: string;
   links: PhotoLinks;
 }
@@ -18,7 +21,6 @@ export interface Photo {
 export interface Categorie {
   id: number;
   libelle: string;
-  links?: Record<string, string>;
 }
 
 export interface Commentaire {
@@ -31,16 +33,9 @@ export interface Commentaire {
 export interface PhotoCollection {
   data: Photo[];
   links: {
-    next?: string;
-    prev?: string;
-    first?: string;
-    last?: string;
-    self?: string;
-  };
-  meta?: {
-    total?: number;
-    per_page?: number;
-    current_page?: number;
-    last_page?: number;
+    next?: { href: string } | string;
+    prev?: { href: string } | string;
+    first?: { href: string } | string;
+    last?: { href: string } | string;
   };
 }

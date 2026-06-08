@@ -14,18 +14,23 @@
   </header>
 
   <main>
-
+    <style>
+      #la_galerie {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .vignette img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+</style>
     <p id="error-msg" class="hidden"></p>
 
-    <!-- ── Exercice 1 : affichage d'une photo ── -->
-    <section id="photo-section">
-      <h2>Photo</h2>
-      <div id="la_photo">
-        <p style="color:#666;font-style:italic;">Chargement de la photo…</p>
-      </div>
-    </section>
+    
 
-    <!-- ── Exercices 2-4 : galerie ── -->
     <section id="galerie-section">
       <h2>Galerie</h2>
       <div class="nav-buttons">
@@ -39,12 +44,23 @@
     </section>
 
   </main>
+  <script id="galerie-template" type="text/x-handlebars-template">
+    {{#each photos}}
+      <div class="vignette" data-photo-id="{{id}}">
+        <img src="{{thumbnail}}" alt="{{titre}}" loading="lazy">
+        <div class="overlay">{{titre}}</div>
+      </div>
+    {{/each}}
+  </script>
 
-  <!-- ══════════════════════════════════════
-       Templates Handlebars
-  ═══════════════════════════════════════ -->
 
-  <!-- Template : affichage d'une photo unique (exercice 1) -->
+  <section id="photo-section">
+      <h2>Photo</h2>
+      <div id="la_photo">
+        <p style="color:#666;font-style:italic;">Chargement de la photo…</p>
+      </div>
+  </section>
+
   <script id="photo-template" type="text/x-handlebars-template">
     <img src="{{url}}" alt="{{titre}}">
     <div class="photo-meta">
@@ -61,15 +77,7 @@
     </div>
   </script>
 
-  <!-- Template : galerie de vignettes (exercice 2) -->
-  <script id="galerie-template" type="text/x-handlebars-template">
-    {{#each photos}}
-      <div class="vignette" data-photo-id="{{id}}">
-        <img src="{{url}}" alt="{{titre}}" loading="lazy">
-        <div class="overlay">{{titre}}</div>
-      </div>
-    {{/each}}
-  </script>
+  
 
   <script src="dist/index.js"></script>
 </body>

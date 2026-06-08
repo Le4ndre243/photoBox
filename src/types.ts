@@ -10,8 +10,8 @@ export interface Photo {
   id: number;
   titre: string;
   type?: string;
-  url?: string;           // URL complète construite
-  thumbnail?: string;     // URL vignette construite
+  url?: string;           
+  thumbnail?: string;     
   date?: string;
   descr?: string;
   description?: string;

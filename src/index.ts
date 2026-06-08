@@ -8,20 +8,19 @@ import { Photo } from './types';
 function getPicture(id: number): void {
   loadPicture(id)
     .then((photo: Photo): void => {
-      console.log('✅ Photo chargée:', photo.titre);
       displayPicture(photo);
 
       getCategorieForPhoto(photo).then(displayCategorie).catch((err: unknown) => {
-        console.warn('⚠️ Catégorie non disponible:', err);
+        console.warn('Catégorie non disponible:', err);
       });
 
       loadCommentaires(photo).then(displayCommentaires).catch((err: unknown) => {
-        console.warn('⚠️ Commentaires non disponibles:', err);
+        console.warn('Commentaires non disponibles:', err);
       });
     })
     .catch((err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error('❌ Erreur getPicture:', msg);
+      console.error('Erreur getPicture:', msg);
       if (err instanceof Error) displayError(err.message);
     });
 }

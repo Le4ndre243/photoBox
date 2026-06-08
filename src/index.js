@@ -17,15 +17,10 @@
     return to;
   };
   var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-    // If the importer is in node compatibility mode or this is not an ESM
-    // file that has been converted to a CommonJS file using a Babel-
-    // compatible transform (i.e. "__esModule" has not been set), then set
-    // "default" to the CommonJS "module.exports" for node compatibility.
     isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
     mod
   ));
 
-  // node_modules/handlebars/dist/cjs/handlebars/utils.js
   var require_utils = __commonJS({
     "node_modules/handlebars/dist/cjs/handlebars/utils.js"(exports) {
       "use strict";
@@ -124,7 +119,6 @@
     }
   });
 
-  // node_modules/handlebars/dist/cjs/handlebars/exception.js
   var require_exception = __commonJS({
     "node_modules/handlebars/dist/cjs/handlebars/exception.js"(exports, module) {
       "use strict";
@@ -173,7 +167,6 @@
     }
   });
 
-  // node_modules/handlebars/dist/cjs/handlebars/helpers/block-helper-missing.js
   var require_block_helper_missing = __commonJS({
     "node_modules/handlebars/dist/cjs/handlebars/helpers/block-helper-missing.js"(exports, module) {
       "use strict";
